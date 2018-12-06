@@ -104,10 +104,12 @@ for n, i in enumerate(digits_list):
     dataframe = pd.DataFrame.from_records(temp_array)
     doclist.append(dataframe)   
 
-from keras.applications.resnet50 import ResNet50
+#from keras.applications.resnet50 import ResNet50
+from keras.applications.vgg16 import vgg16
 def extract_resnet(X):  
     # X : images numpy array
-    resnet_model = ResNet50(input_shape=(108, 2, 3), weights='imagenet', include_top=False)  # Since top layer is the fc layer used for predictions
+    #resnet_model = ResNet50(input_shape=(32, 32, 3), weights='imagenet', include_top=False)  # Since top layer is the fc layer used for predictions
+    vgg_model = vgg16(input_shape=(10, 10, 3), weights='imagenet', include_top=False)
     features_array = resnet_model.predict(X)
     return features_array
      
