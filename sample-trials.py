@@ -11,19 +11,7 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-from sklearn.ensemble import IsolationForest
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
-
-
-s = open('spam.txt', 'r+')
-h = open('ham.txt', 'r+')
-
-if os.stat("spam.txt").st_size != 0 or  os.stat("ham.txt").st_size:    
-    s.truncate(0) # need '0' when using r+
-    h.truncate(0)
-    
-s.seek(0,0)
-h.seek(0,0)
 
 ham_path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\ham'
 spam_path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\spam'  
@@ -393,3 +381,17 @@ print(accuracy_score(y_test,y_predAN))
 print(precision_score(y_test, y_predAN))
 print(recall_score(y_test,y_predAN))
 print(f1_score(y_test,y_predAN))
+
+
+
+# =============================================================================
+# s = open('spam.txt', 'r+')
+# h = open('ham.txt', 'r+')
+# 
+# if os.stat("spam.txt").st_size != 0 or  os.stat("ham.txt").st_size:    
+#     s.truncate(0) # need '0' when using r+
+#     h.truncate(0)
+#     
+# s.seek(0,0)
+# h.seek(0,0)
+# =============================================================================
