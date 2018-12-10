@@ -16,6 +16,23 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
+# Importing classification model librares
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from keras.models import Sequential
+from keras.layers import Dense
+
+# map the inputs to the function blocks
+options = {0 : "Logistic_Regression",
+           1 : "K_Nearest_Neighbors",
+           2 : "Naive_Bayes",
+           3 : "Decision_Tree",
+           4 : "Random_Forest"
+          }
+
 # =============================================================================
 # Process and convert raw email content into text files
 # =============================================================================
@@ -82,20 +99,61 @@ def MapWordsToDigits(source, path):
 
 def EliminateExtraDigits(lst):
     # removing list elements towards the end of the list which cant be converted to matrices
-    mod = len(lst)%unitSize
-    offset = len(hamList)-mod
+    mod = len(lst)%(unitMatrixSize*unitMatrixSize)
+    offset = len(lst)-mod
     return offset
 
-def GenerateMatrix(dig_list, unitMatrixSize, unitSize):
+def GenerateMatrix(dig_list, unitMatrixSize, channels):
     newList = []
     matrixList = []
     for i in range(0, len(dig_list), (unitMatrixSize*unitMatrixSize)):
         newList = dig_list[i:i + (unitMatrixSize*unitMatrixSize)]
         matrix = np.reshape(newList[:] ,(unitMatrixSize, unitMatrixSize))
-        matrix3Channeled = np.concatenate([[matrix]] * 3, axis=0)
+        matrix3Channeled = np.concatenate([[matrix]] * channels, axis=0)
         matrix3Channeled = np.transpose(matrix3Channeled, (1, 2, 0))
         matrixList.append(matrix3Channeled)
     return matrixList
+
+# function blocks for training and predicting the scores
+def Logistic_Regression():
+    classifierL = LogisticRegression(random_state = 0)
+    classifierL.fit(X_train, y_train)
+    y_predL = classifierL.predict(X_test)
+    cmL = confusion_matrix(y_test, y_predL)
+    accuracyL = (cmL[0][0] + cmL[1][1]) / (cmL[0][0] + cmL[0][1] + cmL[1][0] + cmL[1][1])
+    return accuracyL
+
+def K_Nearest_Neighbors():
+    classifierK = KNeighborsClassifier(n_neighbors = 5, metric = 'minkowski', p = 2)    
+    classifierK.fit(X_train, y_train)
+    y_predK = classifierK.predict(X_test)
+    cmK = confusion_matrix(y_test, y_predK)
+    accuracyK = (cmK[0][0] + cmK[1][1]) / (cmK[0][0] + cmK[0][1] + cmK[1][0] + cmK[1][1])
+    return accuracyK
+    
+def Naive_Bayes():
+    classifierN = GaussianNB()
+    classifierN.fit(X_train, y_train)
+    y_predN = classifierN.predict(X_test)
+    cmN = confusion_matrix(y_test, y_predN)
+    accuracyN = (cmN[0][0] + cmN[1][1]) / (cmN[0][0] + cmN[0][1] + cmN[1][0] + cmN[1][1])
+    return accuracyN
+    
+def Decision_Tree():
+    classifierD = DecisionTreeClassifier(criterion = 'entropy', random_state = 0)
+    classifierD.fit(X_train, y_train)
+    y_predD = classifierD.predict(X_test)
+    cmD = confusion_matrix(y_test, y_predD)
+    accuracyD = (cmD[0][0] + cmD[1][1]) / (cmD[0][0] + cmD[0][1] + cmD[1][0] + cmD[1][1])
+    return accuracyD
+
+def Random_Forest():
+    classifierR = RandomForestClassifier(n_estimators = 10, criterion = 'entropy', random_state = 0)
+    classifierR.fit(X_train, y_train)
+    y_predR = classifierR.predict(X_test)
+    cmR = confusion_matrix(y_test, y_predR)
+    accuracyR = (cmR[0][0] + cmR[1][1]) / (cmR[0][0] + cmR[0][1] + cmR[1][0] + cmR[1][1])
+    return accuracyR
 
 # For Training
 ham_path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\ham'
@@ -125,7 +183,6 @@ testList = MapWordsToDigits(test_Folder, test_Path)
 # setting dimentions on input for training
 unitMatrixSize = 32; # used to generate 32X32 matrices
 no_of_channels = 3; # Three channel augmentation
-unitSize = (unitMatrixSize*unitMatrixSize); unitSize = (32*32); 
 
 # sanity test
 # no of ham 3d matrices, extracting only the integer part
@@ -136,13 +193,12 @@ unitSize = (unitMatrixSize*unitMatrixSize); unitSize = (32*32);
 
 ham_digits_list = hamList[0:EliminateExtraDigits(hamList)]
 spam_digits_list = spamList[0:EliminateExtraDigits(spamList)]
-test_digits_list = spamList[0:EliminateExtraDigits(testList)]
+test_digits_list = testList[0:EliminateExtraDigits(testList)]
 
 # generation of matrices
-
-hamArray = np.array(GenerateMatrix(ham_digits_list, unitMatrixSize, unitSize));
-spamArray = np.array(GenerateMatrix(spam_digits_list, unitMatrixSize, unitSize)); 
-testArray = np.array(GenerateMatrix(test_digits_list, unitMatrixSize, unitSize)); 
+hamArray = np.array(GenerateMatrix(ham_digits_list, unitMatrixSize, no_of_channels));
+spamArray = np.array(GenerateMatrix(spam_digits_list, unitMatrixSize, no_of_channels)); 
+testArray = np.array(GenerateMatrix(test_digits_list, unitMatrixSize, no_of_channels)); 
 
 # =============================================================================
 # Extracting features using deep learning models
@@ -206,9 +262,12 @@ print('Explained variance percentage = %0.2f' % sum(pca.explained_variance_ratio
 X_train = pca.transform(X_train)
 X_test = pca.transform(X_test)
 
-##################################################################################################
+# =============================================================================
 # Classification models
-##################################################################################################
+# =============================================================================
+
+
+
 # =============================================================================
 # from sklearn.linear_model import LogisticRegression
 # #classifier = LogisticRegression(random_state = 0)
