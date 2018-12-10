@@ -256,6 +256,15 @@ from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(df.drop(['label'], axis=1), df['label'], test_size=0.2, random_state=0)
 
 # =============================================================================
+# Without data split
+# =============================================================================
+trainX = df.drop(['label'], axis=1)
+trainY = df['label']
+testX = testDF
+
+
+
+# =============================================================================
 # Apply standard scaler to output from resnet50
 # =============================================================================
 ss = StandardScaler()
@@ -273,11 +282,11 @@ Xtrain = pca.transform(Xtrain)
 Xtest = pca.transform(Xtest)
 
 # =============================================================================
-# Classification models
+# Classification models on split data after PCA Transformation
 # =============================================================================
 for model in range(5):
     if(model == 0):
-        print("Accuracy of Logistic_Regression: ",  Logistic_Regression(Xtrain, Xtest, y_train, y_test))
+        print("Accuracy of Logistic_Regression: ",  Logistic_Regression(trainX, trainY, y_train, y_test))
     elif(model == 1):
         print("Accuracy of SVM: ", SVM(Xtrain, Xtest, y_train, y_test))
     elif(model == 2):
@@ -291,6 +300,26 @@ for model in range(5):
         
         
 # =============================================================================
+# Classification models on split data without PCA Transformation
+# =============================================================================
+for model in range(5):
+    if(model == 0):
+        print("Accuracy of Logistic_Regression: ",  Logistic_Regression(Xtrain, Xtest, y_train, y_test))
+    elif(model == 1):
+        print("Accuracy of SVM: ", SVM(X_train, X_test, y_train, y_test))
+    elif(model == 2):
+        print("Accuracy of K_Nearest_Neighbors: ", K_Nearest_Neighbors(X_train, X_test, y_train, y_test))
+    elif(model == 3):
+        print("Accuracy of Naive_Bayes: ", Naive_Bayes(X_train, X_test, y_train, y_test))
+    elif(model == 4):
+        print("Accuracy of Decision_Tree: ", Decision_Tree(X_train, X_test, y_train, y_test))
+    elif(model == 5):
+        print("Accuracy of Random_Forest: ", Random_Forest(X_train, X_test, y_train, y_test))
+        
+        
+# =============================================================================
+        
+# =============================================================================
 # using sequential Neural Network
 # =============================================================================
 classifierAN = Sequential()
@@ -301,27 +330,41 @@ classifierAN.add(Dense(output_dim = 32, init = 'uniform', activation = 'relu'))
 classifierAN.add(Dense(output_dim = 16, init = 'uniform', activation = 'relu'))
 classifierAN.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid'))
 classifierAN.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
-classifierAN.fit(Xtrain, y_train, batch_size = 10, nb_epoch = 600)
-y_predAN = classifierAN.predict(Xtest)
-
-
+classifierAN.fit(X_train, y_train, batch_size = 10, nb_epoch = 1000)
+y_predAN = classifierAN.predict(X_test)
 
 # =============================================================================
-# from sklearn.linear_model import LogisticRegression
-# #classifier = LogisticRegression(random_state = 0)
-# classifier = LogisticRegression(C=166.81005372000593, n_jobs=-1,
-#           penalty='l2')
-# mod_logistic = classifier.fit(X_train, y_train)
-# 
-# # Predicting the Validation set results
-# y_pred = mod_logistic.predict(X_test)
-# 
-# print(confusion_matrix(y_test,y_pred))
-# print(accuracy_score(y_test,y_pred))
-# print(precision_score(y_test, y_pred))
-# print(recall_score(y_test,y_pred))
-# print(f1_score(y_test,y_pred))
+# using sequential Neural Network
 # =============================================================================
+    classifierAN = Sequential()
+    classifierAN.add(Dense(output_dim = 1024, init = 'uniform', activation = 'relu', input_dim = 2048))
+    classifierAN.add(Dense(output_dim = 512, init = 'uniform', activation = 'relu', input_dim = 1024))
+    classifierAN.add(Dense(output_dim = 256, init = 'uniform', activation = 'relu', input_dim = 512))
+    classifierAN.add(Dense(output_dim = 128, init = 'uniform', activation = 'relu'))
+    classifierAN.add(Dense(output_dim = 64, init = 'uniform', activation = 'relu'))
+    classifierAN.add(Dense(output_dim = 32, init = 'uniform', activation = 'relu'))
+    classifierAN.add(Dense(output_dim = 16, init = 'uniform', activation = 'relu'))
+    classifierAN.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid'))
+    classifierAN.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+    classifierAN.fit(X_train, y_train, batch_size = 10, nb_epoch = 1000)
+y_predAN = classifierAN.predict(X_test)
+
+
+
+from sklearn.linear_model import LogisticRegression
+#classifier = LogisticRegression(random_state = 0)
+classifier = LogisticRegression(C=166.81005372000593, n_jobs=-1,
+          penalty='l2')
+mod_logistic = classifier.fit(X_train, y_train)
+
+# Predicting the Validation set results
+y_pred = mod_logistic.predict(X_test)
+
+print(confusion_matrix(y_test,y_pred))
+print(accuracy_score(y_test,y_pred))
+print(precision_score(y_test, y_pred))
+print(recall_score(y_test,y_pred))
+print(f1_score(y_test,y_pred))
 ##################################################################################################
 
 ##################################################################################################
