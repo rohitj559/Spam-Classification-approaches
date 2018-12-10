@@ -117,7 +117,7 @@ def GenerateMatrix(dig_list, unitMatrixSize, channels):
     return matrixList
 
 # function blocks for training and predicting the scores
-def Logistic_Regression():
+def Logistic_Regression(X_train, X_test, y_train, y_test):
     classifierL = LogisticRegression(random_state = 0)
     classifierL.fit(X_train, y_train)
     y_predL = classifierL.predict(X_test)
@@ -125,7 +125,7 @@ def Logistic_Regression():
     accuracyL = (cmL[0][0] + cmL[1][1]) / (cmL[0][0] + cmL[0][1] + cmL[1][0] + cmL[1][1])
     return accuracyL
 
-def SVM():
+def SVM(X_train, X_test, y_train, y_test):
     classifierSVM = LinearSVC(random_state = 0)
     classifierSVM.fit(X_train, y_train)
     y_predL = classifierSVM.predict(X_test)
@@ -133,7 +133,7 @@ def SVM():
     accuracySVM = (cmSVM[0][0] + cmSVM[1][1]) / (cmSVM[0][0] + cmSVM[0][1] + cmSVM[1][0] + cmSVM[1][1])
     return accuracySVM
 
-def K_Nearest_Neighbors():
+def K_Nearest_Neighbors(X_train, X_test, y_train, y_test):
     classifierK = KNeighborsClassifier(n_neighbors = 5, metric = 'minkowski', p = 2)    
     classifierK.fit(X_train, y_train)
     y_predK = classifierK.predict(X_test)
@@ -141,7 +141,7 @@ def K_Nearest_Neighbors():
     accuracyK = (cmK[0][0] + cmK[1][1]) / (cmK[0][0] + cmK[0][1] + cmK[1][0] + cmK[1][1])
     return accuracyK
     
-def Naive_Bayes():
+def Naive_Bayes(X_train, X_test, y_train, y_test):
     classifierN = GaussianNB()
     classifierN.fit(X_train, y_train)
     y_predN = classifierN.predict(X_test)
@@ -149,7 +149,7 @@ def Naive_Bayes():
     accuracyN = (cmN[0][0] + cmN[1][1]) / (cmN[0][0] + cmN[0][1] + cmN[1][0] + cmN[1][1])
     return accuracyN
     
-def Decision_Tree():
+def Decision_Tree(X_train, X_test, y_train, y_test):
     classifierD = DecisionTreeClassifier(criterion = 'entropy', random_state = 0)
     classifierD.fit(X_train, y_train)
     y_predD = classifierD.predict(X_test)
@@ -157,7 +157,7 @@ def Decision_Tree():
     accuracyD = (cmD[0][0] + cmD[1][1]) / (cmD[0][0] + cmD[0][1] + cmD[1][0] + cmD[1][1])
     return accuracyD
 
-def Random_Forest():
+def Random_Forest(X_train, X_test, y_train, y_test):
     classifierR = RandomForestClassifier(n_estimators = 10, criterion = 'entropy', random_state = 0)
     classifierR.fit(X_train, y_train)
     y_predR = classifierR.predict(X_test)
@@ -275,7 +275,19 @@ Xtest = pca.transform(Xtest)
 # =============================================================================
 # Classification models
 # =============================================================================
-
+for model in range(5):
+    if(model == 0):
+        print("Accuracy of Logistic_Regression: ",  Logistic_Regression(Xtrain, Xtest, y_train, y_test))
+    elif(model == 1):
+        print("Accuracy of SVM: ", LinearSVC(Xtrain, Xtest, y_train, y_test))
+    elif(model == 2):
+        print("Accuracy of K_Nearest_Neighbors: ", K_Nearest_Neighbors(Xtrain, Xtest, y_train, y_test))
+    elif(model == 3):
+        print("Accuracy of Naive_Bayes: ", Naive_Bayes(Xtrain, Xtest, y_train, y_test))
+    elif(model == 4):
+        print("Accuracy of Decision_Tree: ", Decision_Tree(Xtrain, Xtest, y_train, y_test))
+    else:
+        print("Accuracy of Random_Forest: ", Random_Forest(Xtrain, Xtest, y_train, y_test))
 
 
 
