@@ -126,7 +126,7 @@ unitSize = (unitMatrixSize*unitMatrixSize); unitSize = (32*32); # LXB = 32X32 un
 ham_digits_list = hamList[0:EliminateExtraDigits(hamList)]
 spam_digits_list = hamList[0:EliminateExtraDigits(spamList)]
 
-# generation of ham matrices
+# generation of matrices
 newList = []
 hamMatrixList = []
 for i in range(0, len(ham_digits_list), unitSize):
@@ -136,10 +136,6 @@ for i in range(0, len(ham_digits_list), unitSize):
     hamMatrix3Channeled = np.transpose(hamMatrix3Channeled, (1, 2, 0))
     hamMatrixList.append(hamMatrix3Channeled)
     
-# removing list elements towards the end of the list which cant be converted to matrices
-mod = len(digits_list2)%unitSize
-offset = len(digits_list2)-mod
-spam_digits_list = digits_list2[0:offset]
 
 # generation of ham matrices
 newList = []
@@ -400,7 +396,7 @@ classifierAN.add(Dense(output_dim = 32, init = 'uniform', activation = 'relu'))
 classifierAN.add(Dense(output_dim = 16, init = 'uniform', activation = 'relu'))
 classifierAN.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid'))
 classifierAN.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
-classifierAN.fit(X_train, y_train, batch_size = 10, nb_epoch = 100)
+classifierAN.fit(X_train, y_train, batch_size = 10, nb_epoch = 600)
 y_predAN = classifierAN.predict(X_test)
 
 print(confusion_matrix(y_test,y_predAN))
