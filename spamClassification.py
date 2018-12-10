@@ -86,6 +86,17 @@ def EliminateExtraDigits(lst):
     offset = len(hamList)-mod
     return offset
 
+def GenerateMatrix(dig_list, unitMatrixSize, unitSize):
+    newList = []
+    matrixList = []
+    for i in range(0, len(dig_list), (unitMatrixSize*unitMatrixSize)):
+        newList = dig_list[i:i + (unitMatrixSize*unitMatrixSize)]
+        matrix = np.reshape(newList[:] ,(unitMatrixSize, unitMatrixSize))
+        matrix3Channeled = np.concatenate([[matrix]] * 3, axis=0)
+        matrix3Channeled = np.transpose(matrix3Channeled, (1, 2, 0))
+        matrixList.append(matrix3Channeled)
+    return matrixList
+
 # For Training
 ham_path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\ham'
 spam_path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\spam'
@@ -112,9 +123,9 @@ testList = MapWordsToDigits(test_Folder, test_Path)
 # =============================================================================
 
 # setting dimentions on input for training
-unitMatrixSize = 32; 
+unitMatrixSize = 32; # used to generate 32X32 matrices
 no_of_channels = 3; # Three channel augmentation
-unitSize = (unitMatrixSize*unitMatrixSize); unitSize = (32*32); # LXB = 32X32 unit matrix
+unitSize = (unitMatrixSize*unitMatrixSize); unitSize = (32*32); 
 
 # sanity test
 # no of ham 3d matrices, extracting only the integer part
@@ -124,48 +135,32 @@ unitSize = (unitMatrixSize*unitMatrixSize); unitSize = (32*32); # LXB = 32X32 un
 # =============================================================================
 
 ham_digits_list = hamList[0:EliminateExtraDigits(hamList)]
-spam_digits_list = hamList[0:EliminateExtraDigits(spamList)]
+spam_digits_list = spamList[0:EliminateExtraDigits(spamList)]
+test_digits_list = spamList[0:EliminateExtraDigits(testList)]
 
 # generation of matrices
-newList = []
-hamMatrixList = []
-for i in range(0, len(ham_digits_list), unitSize):
-    newList = ham_digits_list[i:i + unitSize]
-    hamMatrix = np.reshape(newList[:] ,(unitMatrixSize, unitMatrixSize))
-    hamMatrix3Channeled = np.concatenate([[hamMatrix]] * 3, axis=0)
-    hamMatrix3Channeled = np.transpose(hamMatrix3Channeled, (1, 2, 0))
-    hamMatrixList.append(hamMatrix3Channeled)
-    
 
-# generation of ham matrices
-newList = []
-spamMatrixList = []
-for i in range(0, len(spam_digits_list), unitSize):
-    newList = spam_digits_list[i:i + unitSize]
-    spamMatrix = np.reshape(newList[:] ,(unitMatrixSize, unitMatrixSize))
-    spamMatrix3Channeled = np.concatenate([[spamMatrix]] * 3, axis=0)
-    spamMatrix3Channeled = np.transpose(spamMatrix3Channeled, (1, 2, 0))
-    spamMatrixList.append(spamMatrix3Channeled)   
+hamArray = np.array(GenerateMatrix(ham_digits_list, unitMatrixSize, unitSize));
+spamArray = np.array(GenerateMatrix(spam_digits_list, unitMatrixSize, unitSize)); 
+testArray = np.array(GenerateMatrix(test_digits_list, unitMatrixSize, unitSize)); 
 
-# conversion of lists to arrays
-hamArray = np.array(hamMatrixList);
-spamArray = np.array(spamMatrixList); 
-
-##################################################################################################
+# =============================================================================
 # Extracting features using deep learning models
-##################################################################################################
+# =============================================================================
+
 # Training the Resnet model    
 from keras.applications.resnet50 import ResNet50
 resnet_model = ResNet50(input_shape=(32, 32, 3), weights='imagenet', include_top=False)  # Since top layer is the fc layer used for predictions
 
-# test
+# sanity test
 # =============================================================================
 # print("Total Params:", resnet_model.count_params()) # total no of parameters
 # =============================================================================
 
-##################################################################################################
-# extract the features for ham and spam seperately
-##################################################################################################
+# =============================================================================
+# extraction the features 
+# =============================================================================
+
 ham_FeatureArray = resnet_model.predict(hamArray);
 spam_FeatureArray = resnet_model.predict(spamArray);
 
