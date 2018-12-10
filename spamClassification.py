@@ -279,15 +279,30 @@ for model in range(5):
     if(model == 0):
         print("Accuracy of Logistic_Regression: ",  Logistic_Regression(Xtrain, Xtest, y_train, y_test))
     elif(model == 1):
-        print("Accuracy of SVM: ", LinearSVC(Xtrain, Xtest, y_train, y_test))
+        print("Accuracy of SVM: ", SVM(Xtrain, Xtest, y_train, y_test))
     elif(model == 2):
         print("Accuracy of K_Nearest_Neighbors: ", K_Nearest_Neighbors(Xtrain, Xtest, y_train, y_test))
     elif(model == 3):
         print("Accuracy of Naive_Bayes: ", Naive_Bayes(Xtrain, Xtest, y_train, y_test))
     elif(model == 4):
         print("Accuracy of Decision_Tree: ", Decision_Tree(Xtrain, Xtest, y_train, y_test))
-    else:
+    elif(model == 5):
         print("Accuracy of Random_Forest: ", Random_Forest(Xtrain, Xtest, y_train, y_test))
+        
+        
+# =============================================================================
+# using sequential Neural Network
+# =============================================================================
+classifierAN = Sequential()
+classifierAN.add(Dense(output_dim = 256, init = 'uniform', activation = 'relu', input_dim = 512))
+classifierAN.add(Dense(output_dim = 128, init = 'uniform', activation = 'relu'))
+classifierAN.add(Dense(output_dim = 64, init = 'uniform', activation = 'relu'))
+classifierAN.add(Dense(output_dim = 32, init = 'uniform', activation = 'relu'))
+classifierAN.add(Dense(output_dim = 16, init = 'uniform', activation = 'relu'))
+classifierAN.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid'))
+classifierAN.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+classifierAN.fit(Xtrain, y_train, batch_size = 10, nb_epoch = 600)
+y_predAN = classifierAN.predict(Xtest)
 
 
 
