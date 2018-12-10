@@ -163,9 +163,11 @@ resnet_model = ResNet50(input_shape=(32, 32, 3), weights='imagenet', include_top
 
 ham_FeatureArray = resnet_model.predict(hamArray);
 spam_FeatureArray = resnet_model.predict(spamArray);
+test_FeatureArray = resnet_model.predict(testArray);
 
 hamDF = pd.DataFrame(ham_FeatureArray.squeeze())
 spamDF = pd.DataFrame(spam_FeatureArray.squeeze())
+testDF = pd.DataFrame(test_FeatureArray.squeeze())
 
 hamDF["label"] = [0]*len(hamDF)
 spamDF["label"] = [1]*len(spamDF)
@@ -178,22 +180,26 @@ spamDF["label"] = [1]*len(spamDF)
 
 frames = [hamDF, spamDF]
 df = pd.concat(frames)
-
 df = df.sample(frac=1).reset_index(drop=True)
 
-##################################################################################################
+# =============================================================================
 # Splitting the dataset into  Training set and Test set
-##################################################################################################
+# =============================================================================
+
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(df.drop(['label'], axis=1), df['label'], test_size=0.2, random_state=0)
 
+# =============================================================================
 # Apply standard scaler to output from resnet50
+# =============================================================================
 ss = StandardScaler()
 ss.fit(X_train)
 X_train = ss.transform(X_train)
 X_test = ss.transform(X_test)
 
+# =============================================================================
 # Take PCA to reduce feature space dimensionality
+# =============================================================================
 pca = PCA(n_components=512, whiten=True)
 pca = pca.fit(X_train)
 print('Explained variance percentage = %0.2f' % sum(pca.explained_variance_ratio_))
