@@ -18,6 +18,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 # Importing classification model librares
 from sklearn.linear_model import LogisticRegression
+from sklearn.svm import LinearSVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
@@ -27,10 +28,11 @@ from keras.layers import Dense
 
 # map the inputs to the function blocks
 options = {0 : "Logistic_Regression",
-           1 : "K_Nearest_Neighbors",
-           2 : "Naive_Bayes",
-           3 : "Decision_Tree",
-           4 : "Random_Forest"
+           1 : "SVM",
+           2 : "K_Nearest_Neighbors",
+           3 : "Naive_Bayes",
+           4 : "Decision_Tree",
+           5 : "Random_Forest"
           }
 
 # =============================================================================
@@ -122,6 +124,14 @@ def Logistic_Regression():
     cmL = confusion_matrix(y_test, y_predL)
     accuracyL = (cmL[0][0] + cmL[1][1]) / (cmL[0][0] + cmL[0][1] + cmL[1][0] + cmL[1][1])
     return accuracyL
+
+def SVM():
+    classifierSVM = LinearSVC(random_state = 0)
+    classifierSVM.fit(X_train, y_train)
+    y_predL = classifierSVM.predict(X_test)
+    cmSVM = confusion_matrix(y_test, y_predL)
+    accuracySVM = (cmSVM[0][0] + cmSVM[1][1]) / (cmSVM[0][0] + cmSVM[0][1] + cmSVM[1][0] + cmSVM[1][1])
+    return accuracySVM
 
 def K_Nearest_Neighbors():
     classifierK = KNeighborsClassifier(n_neighbors = 5, metric = 'minkowski', p = 2)    
@@ -250,8 +260,8 @@ X_train, X_test, y_train, y_test = train_test_split(df.drop(['label'], axis=1), 
 # =============================================================================
 ss = StandardScaler()
 ss.fit(X_train)
-X_train = ss.transform(X_train)
-X_test = ss.transform(X_test)
+Xtrain = ss.transform(X_train)
+Xtest = ss.transform(X_test)
 
 # =============================================================================
 # Take PCA to reduce feature space dimensionality
@@ -259,12 +269,13 @@ X_test = ss.transform(X_test)
 pca = PCA(n_components=512, whiten=True)
 pca = pca.fit(X_train)
 print('Explained variance percentage = %0.2f' % sum(pca.explained_variance_ratio_))
-X_train = pca.transform(X_train)
-X_test = pca.transform(X_test)
+Xtrain = pca.transform(Xtrain)
+Xtest = pca.transform(Xtest)
 
 # =============================================================================
 # Classification models
 # =============================================================================
+
 
 
 
