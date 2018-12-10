@@ -15,6 +15,7 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+from sklearn.model_selection import GridSearchCV
 
 # Importing classification model librares
 from sklearn.linear_model import LogisticRegression
@@ -350,202 +351,133 @@ y_predAN = classifierAN.predict(X_test)
 y_predAN = classifierAN.predict(X_test)
 
 
-
-from sklearn.linear_model import LogisticRegression
-#classifier = LogisticRegression(random_state = 0)
-classifier = LogisticRegression(C=166.81005372000593, n_jobs=-1,
-          penalty='l2')
-mod_logistic = classifier.fit(X_train, y_train)
-
-# Predicting the Validation set results
-y_pred = mod_logistic.predict(X_test)
-
-print(confusion_matrix(y_test,y_pred))
-print(accuracy_score(y_test,y_pred))
-print(precision_score(y_test, y_pred))
-print(recall_score(y_test,y_pred))
-print(f1_score(y_test,y_pred))
-##################################################################################################
-
-##################################################################################################
-# classification models with grid search and cross validation
-##################################################################################################
+# =============================================================================
+# classification models with grid search and cross validation# 
+# =============================================================================
 
 # Logistic Regression
 
 # Create regularization penalty space
 penalty = ['l1', 'l2']
-
 # Create regularization hyperparameter space
 C = np.logspace(0, 4, 10)
-
 # Create hyperparameter options
 hyperparameters = dict(C=C, penalty=penalty)
-
 from sklearn import linear_model
 # Create logistic regression
 logistic = linear_model.LogisticRegression()
-
 # Create grid search using 5-fold cross validation
-from sklearn.model_selection import GridSearchCV
 clf = GridSearchCV(logistic, hyperparameters, cv=5, verbose=0, n_jobs=-1)
-
-# Fit grid search
-# =============================================================================
-# best_model = clf.fit(df.drop(['label'], axis=1), df['label'])
-# =============================================================================
-best_model = clf.fit(X_train, y_train)
-
+# best model
+best_model = clf.fit(Xtrain, y_train)
 # View best hyperparameters
 print('Best Penalty:', best_model.best_estimator_.get_params()['penalty'])
 print('Best C:', best_model.best_estimator_.get_params()['C'])
-
 # prediction on test data using the best model 
-y_pred_logistic = best_model.predict(X_test)
+y_pred_best_logistic = best_model.predict(X_test)
 
-print(confusion_matrix(y_test,y_pred_logistic))
-print(accuracy_score(y_test,y_pred_logistic))
-print(precision_score(y_test, y_pred_logistic))
-print(recall_score(y_test,y_pred_logistic))
-print(f1_score(y_test,y_pred_logistic))
+print(accuracy_score(y_test,y_pred_best_logistic))
 
 # =============================================================================
-# # Making the Confusion Matrix
-# from sklearn.metrics import confusion_matrix
-# cm = confusion_matrix(y_test, y_pred)
-# =============================================================================
-
-# =============================================================================
-# # Calculate accuracy
-# accuracy = (cm[0][0] + cm[1][1]) / (cm[0][0] + cm[0][1] + cm[1][0] + cm[1][1])
-# =============================================================================
-
-# =============================================================================
-# Best Penalty: l2
-# Best C: 166.81005372000593
-# =============================================================================
-
 # SVM
-
-from sklearn.svm import LinearSVC
-
-svc = LinearSVC(C=1.0)
-model_svm = svc.fit(X_train, y_train)
-
-y_pred_svm = model_svm.predict(X_test)
-
-print(confusion_matrix(y_test,y_pred_svm))
-print(accuracy_score(y_test,y_pred_svm))
-print(precision_score(y_test, y_pred_svm))
-print(recall_score(y_test,y_pred_svm))
-print(f1_score(y_test,y_pred_svm))
+from sklearn import svm
 
 parameter_candidates = [
   {'C': [1, 10, 100, 1000], 'kernel': ['linear']},
   {'C': [1, 10, 100, 1000], 'gamma': [0.001, 0.0001], 'kernel': ['rbf']},
 ]
 
-from sklearn import svm
-from sklearn.model_selection import GridSearchCV
-
 # Create a classifier object with the classifier and parameter candidates
-clf = GridSearchCV(estimator=svm.SVC(), param_grid=parameter_candidates, n_jobs=-1)
-
+clf_svm = GridSearchCV(estimator=svm.SVC(), param_grid=parameter_candidates, n_jobs=-1)
 # Train the classifier on data1's feature and target data
-best_model_svmGrid = clf.fit(X_train, y_train) 
-
+best_model_svmGrid = clf_svm.fit(Xtrain, y_train) 
 # prediction on test data using the best model 
-y_pred_svmGrid= best_model_svmGrid.predict(X_test)
-
-print(confusion_matrix(y_test,y_pred_svmGrid))
+y_pred_svmGrid= best_model_svmGrid.predict(Xtest)
+# get accuracy
 print(accuracy_score(y_test,y_pred_svmGrid))
-print(precision_score(y_test, y_pred_svmGrid))
-print(recall_score(y_test,y_pred_svmGrid))
-print(f1_score(y_test,y_pred_svmGrid))
 
 # =============================================================================
-
-# Adaboost
-
-from sklearn.ensemble import AdaBoostClassifier
-
-clf = AdaBoostClassifier(n_estimators=50,
-                         learning_rate=1,
-                         random_state=0)
-
-model = clf.fit(X_train, y_train)
-
-y_pred_svm = model_svm.predict(X_test)
-
-print(confusion_matrix(y_test,y_pred_svm))
-print(accuracy_score(y_test,y_pred_svm))
-print(precision_score(y_test, y_pred_svm))
-print(recall_score(y_test,y_pred_svm))
-print(f1_score(y_test,y_pred_svm))
-# =============================================================================
-
 # Random Forest
 
 from sklearn.ensemble import RandomForestClassifier
-
 clf = RandomForestClassifier(criterion='entropy', random_state=0, n_jobs=-1)
-
 model_randomForest = clf.fit(X_train, y_train)
-
 # Make new observation
-observation = [[ 5,  4,  3,  2]]
-              
+observation = [[ 5,  4,  3,  2]]              
 # Predict observation's class    
 y_pred_randomForest = model_randomForest.predict(X_test)
 
-print(confusion_matrix(y_test,y_pred_randomForest))
 print(accuracy_score(y_test,y_pred_randomForest))
-print(precision_score(y_test, y_pred_randomForest))
-print(recall_score(y_test,y_pred_randomForest))
-print(f1_score(y_test,y_pred_randomForest))
 # =============================================================================
 
-# Neural Network:
-from keras.models import Sequential
-from keras.layers import Dense
-
-classifierAN = Sequential()
-classifierAN.add(Dense(output_dim = 256, init = 'uniform', activation = 'relu', input_dim = 512))
-classifierAN.add(Dense(output_dim = 128, init = 'uniform', activation = 'relu'))
-classifierAN.add(Dense(output_dim = 64, init = 'uniform', activation = 'relu'))
-classifierAN.add(Dense(output_dim = 32, init = 'uniform', activation = 'relu'))
-classifierAN.add(Dense(output_dim = 16, init = 'uniform', activation = 'relu'))
-classifierAN.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid'))
-classifierAN.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
-classifierAN.fit(X_train, y_train, batch_size = 10, nb_epoch = 100)
-y_predAN = classifierAN.predict(X_test)
-
-print(confusion_matrix(y_test,y_predAN))
-print(accuracy_score(y_test,y_predAN))
-print(precision_score(y_test, y_predAN))
-print(recall_score(y_test,y_predAN))
-print(f1_score(y_test,y_predAN))
 
 
-classifierAN = Sequential()
-classifierAN.add(Dense(output_dim = 1024, init = 'uniform', activation = 'relu', input_dim = 2048))
-classifierAN.add(Dense(output_dim = 512, init = 'uniform', activation = 'relu'))
-classifierAN.add(Dense(output_dim = 256, init = 'uniform', activation = 'relu'))
-classifierAN.add(Dense(output_dim = 128, init = 'uniform', activation = 'relu'))
-classifierAN.add(Dense(output_dim = 64, init = 'uniform', activation = 'relu'))
-classifierAN.add(Dense(output_dim = 32, init = 'uniform', activation = 'relu'))
-classifierAN.add(Dense(output_dim = 16, init = 'uniform', activation = 'relu'))
-classifierAN.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid'))
-classifierAN.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
-classifierAN.fit(X_train, y_train, batch_size = 10, nb_epoch = 600)
-y_predAN = classifierAN.predict(X_test)
+# 
+# # Neural Network:
+# 
+# 
+# classifierAN = Sequential()
+# classifierAN.add(Dense(output_dim = 256, init = 'uniform', activation = 'relu', input_dim = 512))
+# classifierAN.add(Dense(output_dim = 128, init = 'uniform', activation = 'relu'))
+# classifierAN.add(Dense(output_dim = 64, init = 'uniform', activation = 'relu'))
+# classifierAN.add(Dense(output_dim = 32, init = 'uniform', activation = 'relu'))
+# classifierAN.add(Dense(output_dim = 16, init = 'uniform', activation = 'relu'))
+# classifierAN.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid'))
+# classifierAN.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+# classifierAN.fit(X_train, y_train, batch_size = 10, nb_epoch = 100)
+# y_predAN = classifierAN.predict(X_test)
+# 
+# print(confusion_matrix(y_test,y_predAN))
+# print(accuracy_score(y_test,y_predAN))
+# print(precision_score(y_test, y_predAN))
+# print(recall_score(y_test,y_predAN))
+# print(f1_score(y_test,y_predAN))
+# 
+# 
+# classifierAN = Sequential()
+# classifierAN.add(Dense(output_dim = 1024, init = 'uniform', activation = 'relu', input_dim = 2048))
+# classifierAN.add(Dense(output_dim = 512, init = 'uniform', activation = 'relu'))
+# classifierAN.add(Dense(output_dim = 256, init = 'uniform', activation = 'relu'))
+# classifierAN.add(Dense(output_dim = 128, init = 'uniform', activation = 'relu'))
+# classifierAN.add(Dense(output_dim = 64, init = 'uniform', activation = 'relu'))
+# classifierAN.add(Dense(output_dim = 32, init = 'uniform', activation = 'relu'))
+# classifierAN.add(Dense(output_dim = 16, init = 'uniform', activation = 'relu'))
+# classifierAN.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid'))
+# classifierAN.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+# classifierAN.fit(X_train, y_train, batch_size = 10, nb_epoch = 600)
+# y_predAN = classifierAN.predict(X_test)
+# 
+# print(confusion_matrix(y_test,y_predAN))
+# print(accuracy_score(y_test,y_predAN))
+# print(precision_score(y_test, y_predAN))
+# print(recall_score(y_test,y_predAN))
+# print(f1_score(y_test,y_predAN))
+# 
+# =============================================================================
 
-print(confusion_matrix(y_test,y_predAN))
-print(accuracy_score(y_test,y_predAN))
-print(precision_score(y_test, y_predAN))
-print(recall_score(y_test,y_predAN))
-print(f1_score(y_test,y_predAN))
+# =============================================================================
+# from sklearn.linear_model import LogisticRegression
+# #classifier = LogisticRegression(random_state = 0)
+# classifier = LogisticRegression(C=166.81005372000593, n_jobs=-1,
+#           penalty='l2')
+# mod_logistic = classifier.fit(X_train, y_train)
+# 
+# # Predicting the Validation set results
+# y_pred = mod_logistic.predict(X_test)
+# 
+# print(confusion_matrix(y_test,y_pred))
+# print(accuracy_score(y_test,y_pred))
+# print(precision_score(y_test, y_pred))
+# print(recall_score(y_test,y_pred))
+# print(f1_score(y_test,y_pred))
+# 
+# =============================================================================
 
+
+# =============================================================================
+# Best Penalty: l2
+# Best C: 166.81005372000593
+# =============================================================================
 
 
 
