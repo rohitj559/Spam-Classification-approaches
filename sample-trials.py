@@ -4,8 +4,11 @@ Created on Wed Nov 28 22:10:21 2018
 
 @author: Rohit
 """
-
+# =============================================================================
+#  Import libraries
+# =============================================================================
 import os
+from bs4 import BeautifulSoup
 from nltk import word_tokenize
 import numpy as np
 import pandas as pd
@@ -13,6 +16,45 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
+# =============================================================================
+# Process and convert raw email content into text files
+# =============================================================================
+# Run these only once
+def ConvertMailsToText(source, dest):
+    sourceContent = os.listdir(source)
+    for fname in sourceContent:
+        source = os.path.join(source, fname)
+        f = open(source, "r")
+        html = f.read()
+        f.close()
+        soup = BeautifulSoup(html, 'html.parser')
+        s = soup.get_text()
+        s = s.encode('UTF-8')
+        if not os.path.exists(dest): # dest path doesnot exist
+            os.makedirs(dest)
+        f = open(dest + fname + ".txt", "wb")
+        f.write(s)
+        f.close()
+
+# process training data
+sourceTrain = os.getcwd() + "\CSDMC2010_SPAM\TRAINING"
+destinationTrain = os.getcwd() + "trainTextMails"
+ConvertMailsToText(sourceTrain, destinationTrain)
+
+# process test data
+sourceTest = os.getcwd() + "\CSDMC2010_SPAM\TESTING"
+destinationTest = os.getcwd() + "testTextMails"
+ConvertMailsToText(sourceTest, destinationTest)
+
+
+
+
+
+
+
+
+
+# Give your own path for ham and spam mails
 ham_path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\ham'
 spam_path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\spam'  
  
@@ -384,14 +426,4 @@ print(f1_score(y_test,y_predAN))
 
 
 
-# =============================================================================
-# s = open('spam.txt', 'r+')
-# h = open('ham.txt', 'r+')
-# 
-# if os.stat("spam.txt").st_size != 0 or  os.stat("ham.txt").st_size:    
-#     s.truncate(0) # need '0' when using r+
-#     h.truncate(0)
-#     
-# s.seek(0,0)
-# h.seek(0,0)
-# =============================================================================
+
