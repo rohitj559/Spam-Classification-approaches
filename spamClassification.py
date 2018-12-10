@@ -48,51 +48,59 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 # ConvertMailsToText(sourceTest, destinationTest)
 # =============================================================================
 
-# Give your own path for ham and spam mails
-ham_path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\ham'
-spam_path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\spam'  
- 
-##################################################################################################
+# =============================================================================
 # conversion of ham and spam from text to digits  
-##################################################################################################  
+# =============================================================================
+def MapWordsToDigits(source, path):    
+    punctuation = '!@#$%^&*()_-+={}[]:;"\'|<>,.?/~`'
+    digits_dict = {}
+    digits_list = []
+    count = 0
+    
+    for file in source:
+        sourceFile = os.path.join(path, file)
+        fin = open(sourceFile, "r", encoding="utf-8")
+        fin.seek(0,0)
+        fin = ''.join(x for x in fin if x not in punctuation)
+        fin = fin.lower()
+        fin_words = word_tokenize(fin)    
+        fin_digits_list = []
+        for word in fin_words:
+            if word not in digits_dict.keys():
+                digits_dict[word] =  count
+                count = count + 1
+                fin_digits_list.append(digits_dict[word])
+            else:
+                fin_digits_list.append(digits_dict[word])
+    # test
+    # =============================================================================
+    #     if len(fin_digits_list) < 15:
+    #         print("Warning! on File: " + str(file));
+    # =============================================================================
+        digits_list.extend(fin_digits_list)
+    return digits_list
+
+# For Training
+ham_path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\ham'
+spam_path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\spam'
+
 ham_folder = os.listdir(ham_path)
 spam_folder = os.listdir(spam_path)
-#remove = dict.fromkeys(map(ord, '\n ' + string.punctuation.replace(' ','')))
-punctuation = '!@#$%^&*()_-+={}[]:;"\'|<>,.?/~`'
-digits_dict = {}
-digits_list = []
-count = 0
 
-# conversion of all ham mails into digits list
-ham_list = []
-for file in ham_folder:
-    source = os.path.join(ham_path, file)
-    fin = open(source, "r", encoding="utf-8")
-    fin.seek(0,0)
-    fin = ''.join(x for x in fin if x not in punctuation)
-    fin = fin.lower()
-    fin_words = word_tokenize(fin)    
-    fin_digits_list = []
-    for word in fin_words:
-        if word not in digits_dict.keys():
-            digits_dict[word] =  count
-            count = count + 1
-            fin_digits_list.append(digits_dict[word])
-        else:
-            fin_digits_list.append(digits_dict[word])
-# test
-# =============================================================================
-#     if len(fin_digits_list) < 15:
-#         print("Warning! on File: " + str(file));
-# =============================================================================
-    digits_list.extend(fin_digits_list)
+# For testing  
+test_Path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\test' 
+
+test_Folder = os.listdir(test_Path)
+
+hamList = MapWordsToDigits(ham_folder, ham_path)
+spamList = MapWordsToDigits(spam_folder, spam_path)
+testList = MapWordsToDigits(test_folder, test_path)
     
 # conversion of spam mails into digits dictioanry    
 digits_dict2 = {}
 digits_list2 = []
 count2 = 0
 
-ham_list = []
 for file in spam_folder:
     source = os.path.join(spam_path, file)
     fin = open(source, "r", encoding="utf-8")
