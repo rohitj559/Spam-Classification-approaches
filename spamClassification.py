@@ -19,40 +19,34 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 # =============================================================================
 # Process and convert raw email content into text files
 # =============================================================================
-# Run these only once
-def ConvertMailsToText(source, dest):
-    sourceContent = os.listdir(source)
-    for fname in sourceContent:
-        source = os.path.join(source, fname)
-        f = open(source, "r")
-        html = f.read()
-        f.close()
-        soup = BeautifulSoup(html, 'html.parser')
-        s = soup.get_text()
-        s = s.encode('UTF-8')
-        if not os.path.exists(dest): # dest path doesnot exist
-            os.makedirs(dest)
-        f = open(dest + fname + ".txt", "wb")
-        f.write(s)
-        f.close()
-
-# process training data
-sourceTrain = os.getcwd() + "\CSDMC2010_SPAM\TRAINING"
-destinationTrain = os.getcwd() + "trainTextMails"
-ConvertMailsToText(sourceTrain, destinationTrain)
-
-# process test data
-sourceTest = os.getcwd() + "\CSDMC2010_SPAM\TESTING"
-destinationTest = os.getcwd() + "testTextMails"
-ConvertMailsToText(sourceTest, destinationTest)
-
-
-
-
-
-
-
-
+# Run these only once. The below code needs more edits
+# =============================================================================
+# def ConvertMailsToText(source, dest):
+#     sourceContent = os.listdir(source)
+#     for fname in sourceContent:
+#         source = os.path.join(source, fname)
+#         f = open(source, "r")
+#         html = f.read()
+#         f.close()
+#         soup = BeautifulSoup(html, 'html.parser')
+#         s = soup.get_text()
+#         s = s.encode('UTF-8')
+#         if not os.path.exists(dest): # dest path doesnot exist
+#             os.makedirs(dest)
+#         f = open(dest + fname + ".txt", "wb")
+#         f.write(s)
+#         f.close()
+# 
+# # process training data
+# sourceTrain = os.getcwd() + "\CSDMC2010_SPAM\TRAINING"
+# destinationTrain = os.getcwd() + "\trainTextMails"
+# ConvertMailsToText(sourceTrain, destinationTrain)
+# 
+# # process test data
+# sourceTest = os.getcwd() + "\CSDMC2010_SPAM\TESTING"
+# destinationTest = os.getcwd() + "\testTextMails"
+# ConvertMailsToText(sourceTest, destinationTest)
+# =============================================================================
 
 # Give your own path for ham and spam mails
 ham_path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\ham'
