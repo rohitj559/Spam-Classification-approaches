@@ -80,68 +80,51 @@ def MapWordsToDigits(source, path):
         digits_list.extend(fin_digits_list)
     return digits_list
 
+def EliminateExtraDigits(lst):
+    # removing list elements towards the end of the list which cant be converted to matrices
+    mod = len(lst)%unitSize
+    offset = len(hamList)-mod
+    return offset
+
 # For Training
 ham_path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\ham'
 spam_path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\spam'
-
 ham_folder = os.listdir(ham_path)
 spam_folder = os.listdir(spam_path)
 
-# For testing  
+# For Testing  
 test_Path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\test' 
-
 test_Folder = os.listdir(test_Path)
 
 hamList = MapWordsToDigits(ham_folder, ham_path)
 spamList = MapWordsToDigits(spam_folder, spam_path)
-testList = MapWordsToDigits(test_folder, test_path)
+testList = MapWordsToDigits(test_Folder, test_Path)
     
-# conversion of spam mails into digits dictioanry    
-digits_dict2 = {}
-digits_list2 = []
-count2 = 0
-
-for file in spam_folder:
-    source = os.path.join(spam_path, file)
-    fin = open(source, "r", encoding="utf-8")
-    fin.seek(0,0)
-    fin = ''.join(x for x in fin if x not in punctuation)
-    fin = fin.lower()
-    fin_words2 = word_tokenize(fin)    
-    fin_digits_list2 = []
-    for word in fin_words2:
-        if word not in digits_dict2.keys():
-            digits_dict2[word] =  count2
-            count2 = count2 + 1
-            fin_digits_list2.append(digits_dict2[word])
-        else:
-            fin_digits_list2.append(digits_dict2[word])
-    if len(fin_digits_list2) < 10:
-        print("Warning! on File: " + str(file));
-    digits_list2.extend(fin_digits_list2)
-
-# test 
+# sanity test 
 # size of ham numeric list(digits_list) and spam numeric list(digits_list2)
 # =============================================================================
-# print(len(digits_list));
-# print(len(digits_list2));
+# print(len(hamList));
+# print(len(spamList));
 # =============================================================================
 
-##################################################################################################
+# =============================================================================
 # preprocessing to split the digits list obtained above into 32X32X3 chunk matrices
-##################################################################################################
-unitMatrixSize = 32;
-no_of_channels = 3;
-# unitSize = (no_of_channels*unitMatrixSize*unitMatrixSize);
-unitSize = (unitMatrixSize*unitMatrixSize);
-# no of ham 3d matrices, extracting only the integer part
-totalHamSamples = int(len(digits_list)/unitSize) 
-totalSpamSamples = int(len(digits_list2)/unitSize)
+# =============================================================================
 
-# removing list elements towards the end of the list which cant be converted to matrices
-mod = len(digits_list)%unitSize
-offset = len(digits_list)-mod
-ham_digits_list = digits_list[0:offset]
+# setting dimentions on input for training
+unitMatrixSize = 32; 
+no_of_channels = 3; # Three channel augmentation
+unitSize = (unitMatrixSize*unitMatrixSize); unitSize = (32*32); # LXB = 32X32 unit matrix
+
+# sanity test
+# no of ham 3d matrices, extracting only the integer part
+# =============================================================================
+# totalHamSamples = int(len(hamList)/unitSize) 
+# totalSpamSamples = int(len(spamList)/unitSize)
+# =============================================================================
+
+ham_digits_list = hamList[0:EliminateExtraDigits(hamList)]
+spam_digits_list = hamList[0:EliminateExtraDigits(spamList)]
 
 # generation of ham matrices
 newList = []
