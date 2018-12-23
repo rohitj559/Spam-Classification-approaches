@@ -3,6 +3,12 @@
 Created on Wed Nov 28 22:10:21 2018
 
 @author: Rohit
+Steps involved:
+    1. merge and convert all mails into digits 
+    2. segregate into ham, spam amd test mails
+    3. convert all the digits into 32X32 matrices
+    4. exclude the left overs
+    5. build machine learing models
 """
 # =============================================================================
 #  Import libraries
@@ -323,16 +329,16 @@ for model in range(5):
 # =============================================================================
 # using sequential Neural Network
 # =============================================================================
-classifierAN = Sequential()
-classifierAN.add(Dense(output_dim = 256, init = 'uniform', activation = 'relu', input_dim = 512))
-classifierAN.add(Dense(output_dim = 128, init = 'uniform', activation = 'relu'))
-classifierAN.add(Dense(output_dim = 64, init = 'uniform', activation = 'relu'))
-classifierAN.add(Dense(output_dim = 32, init = 'uniform', activation = 'relu'))
-classifierAN.add(Dense(output_dim = 16, init = 'uniform', activation = 'relu'))
-classifierAN.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid'))
-classifierAN.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
-classifierAN.fit(X_train, y_train, batch_size = 10, nb_epoch = 1000)
-y_predAN = classifierAN.predict(X_test)
+classifierAN_PCA = Sequential()
+classifierAN_PCA.add(Dense(output_dim = 256, init = 'uniform', activation = 'relu', input_dim = 512))
+classifierAN_PCA.add(Dense(output_dim = 128, init = 'uniform', activation = 'relu'))
+classifierAN_PCA.add(Dense(output_dim = 64, init = 'uniform', activation = 'relu'))
+classifierAN_PCA.add(Dense(output_dim = 32, init = 'uniform', activation = 'relu'))
+classifierAN_PCA.add(Dense(output_dim = 16, init = 'uniform', activation = 'relu'))
+classifierAN_PCA.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid'))
+classifierAN_PCA.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+classifierAN_PCA.fit(Xtrain, y_train, batch_size = 10, nb_epoch = 1000)
+y_predAN_PCA = classifierAN_PCA.predict(Xtest)
 
 # =============================================================================
 # using sequential Neural Network
