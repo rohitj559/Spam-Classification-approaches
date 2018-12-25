@@ -22,6 +22,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from sklearn.model_selection import GridSearchCV
+from itertools import cycle, islice
 
 # Importing classification model librares
 from sklearn.linear_model import LogisticRegression
@@ -90,6 +91,7 @@ def MapWordsToDigits(source, path):
         fin = ''.join(x for x in fin if x not in punctuation)
         fin = fin.lower()
         fin_words = word_tokenize(fin)    
+        
         fin_digits_list = []
         for word in fin_words:
             if word not in digits_dict.keys():
@@ -173,13 +175,13 @@ def Random_Forest(X_train, X_test, y_train, y_test):
     return accuracyR
 
 # For Training
-ham_path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\ham'
-spam_path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\spam'
+ham_path = 'C:\\Masters-LUC\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\ham'
+spam_path = 'C:\\Masters-LUC\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\spam'
 ham_folder = os.listdir(ham_path)
 spam_folder = os.listdir(spam_path)
 
 # For Testing  
-test_Path = 'C:\\Users\\Rohith\\Desktop\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\test' 
+test_Path = 'C:\\Masters-LUC\\Fall_2018\\Research\\Exercise8_Spam_Play_with_text\\text-convert-mails\\test' 
 test_Folder = os.listdir(test_Path)
 
 hamList = MapWordsToDigits(ham_folder, ham_path)
@@ -291,37 +293,39 @@ Xtest = pca.transform(Xtest)
 # =============================================================================
 # Classification models on split data after PCA Transformation
 # =============================================================================
-for model in range(5):
-    if(model == 0):
-        print("Accuracy of Logistic_Regression: ",  Logistic_Regression(trainX, trainY, y_train, y_test))
-    elif(model == 1):
-        print("Accuracy of SVM: ", SVM(Xtrain, Xtest, y_train, y_test))
-    elif(model == 2):
-        print("Accuracy of K_Nearest_Neighbors: ", K_Nearest_Neighbors(Xtrain, Xtest, y_train, y_test))
-    elif(model == 3):
-        print("Accuracy of Naive_Bayes: ", Naive_Bayes(Xtrain, Xtest, y_train, y_test))
-    elif(model == 4):
-        print("Accuracy of Decision_Tree: ", Decision_Tree(Xtrain, Xtest, y_train, y_test))
-    elif(model == 5):
-        print("Accuracy of Random_Forest: ", Random_Forest(Xtrain, Xtest, y_train, y_test))
-        
-        
 # =============================================================================
-# Classification models on split data without PCA Transformation
+# for model in range(5):
+#     if(model == 0):
+#         print("Accuracy of Logistic_Regression: ",  Logistic_Regression(trainX, trainY, y_train, y_test))
+#     elif(model == 1):
+#         print("Accuracy of SVM: ", SVM(Xtrain, Xtest, y_train, y_test))
+#     elif(model == 2):
+#         print("Accuracy of K_Nearest_Neighbors: ", K_Nearest_Neighbors(Xtrain, Xtest, y_train, y_test))
+#     elif(model == 3):
+#         print("Accuracy of Naive_Bayes: ", Naive_Bayes(Xtrain, Xtest, y_train, y_test))
+#     elif(model == 4):
+#         print("Accuracy of Decision_Tree: ", Decision_Tree(Xtrain, Xtest, y_train, y_test))
+#     elif(model == 5):
+#         print("Accuracy of Random_Forest: ", Random_Forest(Xtrain, Xtest, y_train, y_test))
+#         
+#         
+# # =============================================================================
+# # Classification models on split data without PCA Transformation
+# # =============================================================================
+# for model in range(5):
+#     if(model == 0):
+#         print("Accuracy of Logistic_Regression: ",  Logistic_Regression(Xtrain, Xtest, y_train, y_test))
+#     elif(model == 1):
+#         print("Accuracy of SVM: ", SVM(X_train, X_test, y_train, y_test))
+#     elif(model == 2):
+#         print("Accuracy of K_Nearest_Neighbors: ", K_Nearest_Neighbors(X_train, X_test, y_train, y_test))
+#     elif(model == 3):
+#         print("Accuracy of Naive_Bayes: ", Naive_Bayes(X_train, X_test, y_train, y_test))
+#     elif(model == 4):
+#         print("Accuracy of Decision_Tree: ", Decision_Tree(X_train, X_test, y_train, y_test))
+#     elif(model == 5):
+#         print("Accuracy of Random_Forest: ", Random_Forest(X_train, X_test, y_train, y_test))
 # =============================================================================
-for model in range(5):
-    if(model == 0):
-        print("Accuracy of Logistic_Regression: ",  Logistic_Regression(Xtrain, Xtest, y_train, y_test))
-    elif(model == 1):
-        print("Accuracy of SVM: ", SVM(X_train, X_test, y_train, y_test))
-    elif(model == 2):
-        print("Accuracy of K_Nearest_Neighbors: ", K_Nearest_Neighbors(X_train, X_test, y_train, y_test))
-    elif(model == 3):
-        print("Accuracy of Naive_Bayes: ", Naive_Bayes(X_train, X_test, y_train, y_test))
-    elif(model == 4):
-        print("Accuracy of Decision_Tree: ", Decision_Tree(X_train, X_test, y_train, y_test))
-    elif(model == 5):
-        print("Accuracy of Random_Forest: ", Random_Forest(X_train, X_test, y_train, y_test))
         
         
 # =============================================================================
@@ -340,150 +344,169 @@ classifierAN_PCA.compile(optimizer = 'adam', loss = 'binary_crossentropy', metri
 classifierAN_PCA.fit(Xtrain, y_train, batch_size = 10, nb_epoch = 1000)
 y_predAN_PCA = classifierAN_PCA.predict(Xtest)
 
+listSample = []
+listSample = list(y_predAN_PCA)
+
+for i,s in enumerate(listSample):
+    if s < 0.5:
+        listSample[i] = 0
+    else:
+        listSample[i] = 1
+        
+print(accuracy_score(y_test,listSample))
+print(precision_score(y_test,listSample))
+print(recall_score(y_test,listSample))
+print(f1_score(y_test,listSample))
+print(confusion_matrix(y_test,listSample))
+
+
 # =============================================================================
 # using sequential Neural Network
 # =============================================================================
-    classifierAN = Sequential()
-    classifierAN.add(Dense(output_dim = 1024, init = 'uniform', activation = 'relu', input_dim = 2048))
-    classifierAN.add(Dense(output_dim = 512, init = 'uniform', activation = 'relu', input_dim = 1024))
-    classifierAN.add(Dense(output_dim = 256, init = 'uniform', activation = 'relu', input_dim = 512))
-    classifierAN.add(Dense(output_dim = 128, init = 'uniform', activation = 'relu'))
-    classifierAN.add(Dense(output_dim = 64, init = 'uniform', activation = 'relu'))
-    classifierAN.add(Dense(output_dim = 32, init = 'uniform', activation = 'relu'))
-    classifierAN.add(Dense(output_dim = 16, init = 'uniform', activation = 'relu'))
-    classifierAN.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid'))
-    classifierAN.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
-    classifierAN.fit(X_train, y_train, batch_size = 10, nb_epoch = 1000)
+classifierAN = Sequential()
+classifierAN.add(Dense(output_dim = 1024, init = 'uniform', activation = 'relu', input_dim = 2048))
+classifierAN.add(Dense(output_dim = 512, init = 'uniform', activation = 'relu', input_dim = 1024))
+classifierAN.add(Dense(output_dim = 256, init = 'uniform', activation = 'relu', input_dim = 512))
+classifierAN.add(Dense(output_dim = 128, init = 'uniform', activation = 'relu'))
+classifierAN.add(Dense(output_dim = 64, init = 'uniform', activation = 'relu'))
+classifierAN.add(Dense(output_dim = 32, init = 'uniform', activation = 'relu'))
+classifierAN.add(Dense(output_dim = 16, init = 'uniform', activation = 'relu'))
+classifierAN.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid'))
+classifierAN.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+classifierAN.fit(X_train, y_train, batch_size = 10, nb_epoch = 1000)
 y_predAN = classifierAN.predict(X_test)
 
-
 # =============================================================================
-# classification models with grid search and cross validation# 
+# 
+# # =============================================================================
+# # classification models with grid search and cross validation# 
+# # =============================================================================
+# 
+# # Logistic Regression
+# 
+# # Create regularization penalty space
+# penalty = ['l1', 'l2']
+# # Create regularization hyperparameter space
+# C = np.logspace(0, 4, 10)
+# # Create hyperparameter options
+# hyperparameters = dict(C=C, penalty=penalty)
+# from sklearn import linear_model
+# # Create logistic regression
+# logistic = linear_model.LogisticRegression()
+# # Create grid search using 5-fold cross validation
+# clf = GridSearchCV(logistic, hyperparameters, cv=5, verbose=0, n_jobs=-1)
+# # best model
+# best_model = clf.fit(Xtrain, y_train)
+# # View best hyperparameters
+# print('Best Penalty:', best_model.best_estimator_.get_params()['penalty'])
+# print('Best C:', best_model.best_estimator_.get_params()['C'])
+# # prediction on test data using the best model 
+# y_pred_best_logistic = best_model.predict(X_test)
+# 
+# print(accuracy_score(y_test,y_pred_best_logistic))
+# 
+# # =============================================================================
+# # SVM
+# from sklearn import svm
+# 
+# parameter_candidates = [
+#   {'C': [1, 10, 100, 1000], 'kernel': ['linear']},
+#   {'C': [1, 10, 100, 1000], 'gamma': [0.001, 0.0001], 'kernel': ['rbf']},
+# ]
+# 
+# # Create a classifier object with the classifier and parameter candidates
+# clf_svm = GridSearchCV(estimator=svm.SVC(), param_grid=parameter_candidates, n_jobs=-1)
+# # Train the classifier on data1's feature and target data
+# best_model_svmGrid = clf_svm.fit(Xtrain, y_train) 
+# # prediction on test data using the best model 
+# y_pred_svmGrid= best_model_svmGrid.predict(Xtest)
+# # get accuracy
+# print(accuracy_score(y_test,y_pred_svmGrid))
+# 
+# # =============================================================================
+# # Random Forest
+# 
+# from sklearn.ensemble import RandomForestClassifier
+# clf = RandomForestClassifier(criterion='entropy', random_state=0, n_jobs=-1)
+# model_randomForest = clf.fit(X_train, y_train)
+# # Make new observation
+# observation = [[ 5,  4,  3,  2]]              
+# # Predict observation's class    
+# y_pred_randomForest = model_randomForest.predict(X_test)
+# 
+# print(accuracy_score(y_test,y_pred_randomForest))
+# # =============================================================================
+# 
+# 
+# 
+# # 
+# # # Neural Network:
+# # 
+# # 
+# # classifierAN = Sequential()
+# # classifierAN.add(Dense(output_dim = 256, init = 'uniform', activation = 'relu', input_dim = 512))
+# # classifierAN.add(Dense(output_dim = 128, init = 'uniform', activation = 'relu'))
+# # classifierAN.add(Dense(output_dim = 64, init = 'uniform', activation = 'relu'))
+# # classifierAN.add(Dense(output_dim = 32, init = 'uniform', activation = 'relu'))
+# # classifierAN.add(Dense(output_dim = 16, init = 'uniform', activation = 'relu'))
+# # classifierAN.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid'))
+# # classifierAN.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+# # classifierAN.fit(X_train, y_train, batch_size = 10, nb_epoch = 100)
+# # y_predAN = classifierAN.predict(X_test)
+# # 
+# # print(confusion_matrix(y_test,y_predAN))
+# # print(accuracy_score(y_test,y_predAN))
+# # print(precision_score(y_test, y_predAN))
+# # print(recall_score(y_test,y_predAN))
+# # print(f1_score(y_test,y_predAN))
+# # 
+# # 
+# # classifierAN = Sequential()
+# # classifierAN.add(Dense(output_dim = 1024, init = 'uniform', activation = 'relu', input_dim = 2048))
+# # classifierAN.add(Dense(output_dim = 512, init = 'uniform', activation = 'relu'))
+# # classifierAN.add(Dense(output_dim = 256, init = 'uniform', activation = 'relu'))
+# # classifierAN.add(Dense(output_dim = 128, init = 'uniform', activation = 'relu'))
+# # classifierAN.add(Dense(output_dim = 64, init = 'uniform', activation = 'relu'))
+# # classifierAN.add(Dense(output_dim = 32, init = 'uniform', activation = 'relu'))
+# # classifierAN.add(Dense(output_dim = 16, init = 'uniform', activation = 'relu'))
+# # classifierAN.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid'))
+# # classifierAN.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+# # classifierAN.fit(X_train, y_train, batch_size = 10, nb_epoch = 600)
+# # y_predAN = classifierAN.predict(X_test)
+# # 
+# # print(confusion_matrix(y_test,y_predAN))
+# # print(accuracy_score(y_test,y_predAN))
+# # print(precision_score(y_test, y_predAN))
+# # print(recall_score(y_test,y_predAN))
+# # print(f1_score(y_test,y_predAN))
+# # 
+# # =============================================================================
+# 
+# # =============================================================================
+# # from sklearn.linear_model import LogisticRegression
+# # #classifier = LogisticRegression(random_state = 0)
+# # classifier = LogisticRegression(C=166.81005372000593, n_jobs=-1,
+# #           penalty='l2')
+# # mod_logistic = classifier.fit(X_train, y_train)
+# # 
+# # # Predicting the Validation set results
+# # y_pred = mod_logistic.predict(X_test)
+# # 
+# # print(confusion_matrix(y_test,y_pred))
+# # print(accuracy_score(y_test,y_pred))
+# # print(precision_score(y_test, y_pred))
+# # print(recall_score(y_test,y_pred))
+# # print(f1_score(y_test,y_pred))
+# # 
+# # =============================================================================
+# 
+# 
+# # =============================================================================
+# # Best Penalty: l2
+# # Best C: 166.81005372000593
+# # =============================================================================
+# 
+# 
+# 
+# 
 # =============================================================================
-
-# Logistic Regression
-
-# Create regularization penalty space
-penalty = ['l1', 'l2']
-# Create regularization hyperparameter space
-C = np.logspace(0, 4, 10)
-# Create hyperparameter options
-hyperparameters = dict(C=C, penalty=penalty)
-from sklearn import linear_model
-# Create logistic regression
-logistic = linear_model.LogisticRegression()
-# Create grid search using 5-fold cross validation
-clf = GridSearchCV(logistic, hyperparameters, cv=5, verbose=0, n_jobs=-1)
-# best model
-best_model = clf.fit(Xtrain, y_train)
-# View best hyperparameters
-print('Best Penalty:', best_model.best_estimator_.get_params()['penalty'])
-print('Best C:', best_model.best_estimator_.get_params()['C'])
-# prediction on test data using the best model 
-y_pred_best_logistic = best_model.predict(X_test)
-
-print(accuracy_score(y_test,y_pred_best_logistic))
-
-# =============================================================================
-# SVM
-from sklearn import svm
-
-parameter_candidates = [
-  {'C': [1, 10, 100, 1000], 'kernel': ['linear']},
-  {'C': [1, 10, 100, 1000], 'gamma': [0.001, 0.0001], 'kernel': ['rbf']},
-]
-
-# Create a classifier object with the classifier and parameter candidates
-clf_svm = GridSearchCV(estimator=svm.SVC(), param_grid=parameter_candidates, n_jobs=-1)
-# Train the classifier on data1's feature and target data
-best_model_svmGrid = clf_svm.fit(Xtrain, y_train) 
-# prediction on test data using the best model 
-y_pred_svmGrid= best_model_svmGrid.predict(Xtest)
-# get accuracy
-print(accuracy_score(y_test,y_pred_svmGrid))
-
-# =============================================================================
-# Random Forest
-
-from sklearn.ensemble import RandomForestClassifier
-clf = RandomForestClassifier(criterion='entropy', random_state=0, n_jobs=-1)
-model_randomForest = clf.fit(X_train, y_train)
-# Make new observation
-observation = [[ 5,  4,  3,  2]]              
-# Predict observation's class    
-y_pred_randomForest = model_randomForest.predict(X_test)
-
-print(accuracy_score(y_test,y_pred_randomForest))
-# =============================================================================
-
-
-
-# 
-# # Neural Network:
-# 
-# 
-# classifierAN = Sequential()
-# classifierAN.add(Dense(output_dim = 256, init = 'uniform', activation = 'relu', input_dim = 512))
-# classifierAN.add(Dense(output_dim = 128, init = 'uniform', activation = 'relu'))
-# classifierAN.add(Dense(output_dim = 64, init = 'uniform', activation = 'relu'))
-# classifierAN.add(Dense(output_dim = 32, init = 'uniform', activation = 'relu'))
-# classifierAN.add(Dense(output_dim = 16, init = 'uniform', activation = 'relu'))
-# classifierAN.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid'))
-# classifierAN.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
-# classifierAN.fit(X_train, y_train, batch_size = 10, nb_epoch = 100)
-# y_predAN = classifierAN.predict(X_test)
-# 
-# print(confusion_matrix(y_test,y_predAN))
-# print(accuracy_score(y_test,y_predAN))
-# print(precision_score(y_test, y_predAN))
-# print(recall_score(y_test,y_predAN))
-# print(f1_score(y_test,y_predAN))
-# 
-# 
-# classifierAN = Sequential()
-# classifierAN.add(Dense(output_dim = 1024, init = 'uniform', activation = 'relu', input_dim = 2048))
-# classifierAN.add(Dense(output_dim = 512, init = 'uniform', activation = 'relu'))
-# classifierAN.add(Dense(output_dim = 256, init = 'uniform', activation = 'relu'))
-# classifierAN.add(Dense(output_dim = 128, init = 'uniform', activation = 'relu'))
-# classifierAN.add(Dense(output_dim = 64, init = 'uniform', activation = 'relu'))
-# classifierAN.add(Dense(output_dim = 32, init = 'uniform', activation = 'relu'))
-# classifierAN.add(Dense(output_dim = 16, init = 'uniform', activation = 'relu'))
-# classifierAN.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid'))
-# classifierAN.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
-# classifierAN.fit(X_train, y_train, batch_size = 10, nb_epoch = 600)
-# y_predAN = classifierAN.predict(X_test)
-# 
-# print(confusion_matrix(y_test,y_predAN))
-# print(accuracy_score(y_test,y_predAN))
-# print(precision_score(y_test, y_predAN))
-# print(recall_score(y_test,y_predAN))
-# print(f1_score(y_test,y_predAN))
-# 
-# =============================================================================
-
-# =============================================================================
-# from sklearn.linear_model import LogisticRegression
-# #classifier = LogisticRegression(random_state = 0)
-# classifier = LogisticRegression(C=166.81005372000593, n_jobs=-1,
-#           penalty='l2')
-# mod_logistic = classifier.fit(X_train, y_train)
-# 
-# # Predicting the Validation set results
-# y_pred = mod_logistic.predict(X_test)
-# 
-# print(confusion_matrix(y_test,y_pred))
-# print(accuracy_score(y_test,y_pred))
-# print(precision_score(y_test, y_pred))
-# print(recall_score(y_test,y_pred))
-# print(f1_score(y_test,y_pred))
-# 
-# =============================================================================
-
-
-# =============================================================================
-# Best Penalty: l2
-# Best C: 166.81005372000593
-# =============================================================================
-
-
-
