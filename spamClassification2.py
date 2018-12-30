@@ -363,11 +363,11 @@ for i,s in enumerate(listSample):
     else:
         listSample[i] = 1
         
-print(accuracy_score(y_test,listSample))
-print(precision_score(y_test,listSample))
-print(recall_score(y_test,listSample))
-print(f1_score(y_test,listSample))
-print(confusion_matrix(y_test,listSample))
+print("Accuracy: ", accuracy_score(y_test,listSample))
+print("Precision: ", precision_score(y_test,listSample))
+print("recall: ", recall_score(y_test,listSample))
+print("F1 Score: ", f1_score(y_test,listSample))
+print("Confusion Matrix: ", confusion_matrix(y_test,listSample))
 
 
 # =============================================================================
