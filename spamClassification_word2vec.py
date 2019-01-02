@@ -80,6 +80,15 @@ dataframe = pd.concat(frames)
 dataframe = dataframe.sample(frac=1).reset_index(drop=True)
 
 # =============================================================================
+# Inspect text variable
+# =============================================================================
+document_lengths = np.array(list(map(len, dataframe.text.str.split(' '))))
+
+print("The average number of words in a document is: {}.".format(np.mean(document_lengths)))
+print("The minimum number of words in a document is: {}.".format(min(document_lengths)))
+print("The maximum number of words in a document is: {}.".format(max(document_lengths)))
+
+# =============================================================================
 # find and remove non-ascii words
 # =============================================================================
 # special word in a variable for later use
@@ -91,6 +100,7 @@ def remove_ascii_words(df):
         for word in df.loc[i, 'text'].split(' '):
             if any([ord(character) >= 128 for character in word]):
                 non_ascii_words.append(word)
+                # Replacing non-ascii words with special word 'querty'
                 df.loc[i, 'text'] = df.loc[i, 'text'].replace(word, our_special_word)
     return non_ascii_words
 
